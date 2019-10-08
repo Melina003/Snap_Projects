@@ -1,0 +1,718 @@
+<html>
+    <head>
+	<meta name="snap-cloud-domain" location="https://snap.berkeley.edu:443">
+        <meta charset="UTF-8">
+        <title>Snap! Build Your Own Blocks</title>
+        <meta name="description" content="The Snap! social platform">
+        <meta name="author" content="Bernat Romagosa">
+        <meta name="snap-cloud-domain" location="https://snap.berkeley.edu">
+        <link rel="icon" href="favicon.ico">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- External libs, both stylesheets and JS -->
+        <link rel="stylesheet" href="libs/reset.css">
+        <link rel="stylesheet" href="libs/pure-min.css">
+        <link rel="stylesheet"
+            href="https://use.fontawesome.com/releases/v5.7.1/css/all.css"
+            integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr"
+            crossorigin="anonymous">
+        <link rel="stylesheet" href="libs/custom-alert.css">
+        <script type="text/javascript" src="libs/FileSaver.min.js"></script>
+        <!-- Stylesheets -->
+        <link rel="stylesheet" href="style/elements.css">
+        <link rel="stylesheet" href="style/classes.css">
+        <link rel="stylesheet" href="style/layout.css">
+        <!-- JS -->
+        <script type="text/javascript" src="js/locale.js"></script>
+        <script type="text/javascript" src="js/base.js"></script>
+        <script type="text/javascript" src="libs/cloud.js"></script>
+        <script type="text/javascript">SnapCloud = new Cloud();</script>
+        <script type="text/javascript" src="libs/sha512.js"></script>
+    </head>
+    <body>
+        <script type="text/javascript" src="libs/custom-alert.min.js"></script>
+        <script>new customAlert();</script>
+        <div id="loading">
+            <i class="fas fa-spinner fa-spin fa-3x" aria-hidden="true"></i>
+        </div>
+<div id="top-bar">
+    <div class="pure-menu-horizontal pure-menu">
+        <ul class="pure-g pure-menu-list">
+            <a class="pure-u-1-12" href="index">
+                <img src="img/topbar-logo.png" class="logo clickable"/>
+            </a>
+            <span class="pure-u-1-4">
+                <li class="pure-menu-item">
+                    <a localizable class="pure-menu-link run"
+                        target="_blank">Run Snap<em>!</em></a></li>
+                <li class="pure-menu-item">
+                    <a localizable class="pure-menu-link explore"
+                        href="explore">Explore</a></li>
+                <li class="pure-menu-item">
+                    <a localizable class="pure-menu-link forum"
+                        href="https://forum.snap.berkeley.edu/">Forum</a></li>
+            </span>
+            <i class="pure-u-1-6"></i>
+            <div class="search pure-u-1-6">
+                <form action="search">
+                    <input type="text" name="query">
+                    <i class="fas fa-search"></i>
+                </form>
+            </div>
+            <i class="pure-u-3-24"></i>
+            <li hidden="true" class="join pure-menu-item pure-u-1-12">
+                <a localizable class="pure-menu-link"
+                    href="sign_up">Join</a></li>
+            <li hidden="true" class="sign-in pure-menu-item pure-u-1-12">
+                <a localizable class="pure-menu-link"
+                               href="login">Log In</a></li>
+            <li hidden="true" class="pure-menu-item pure-u-1-6
+                pure-menu-has-children pure-menu-allow-hover user-menu">
+                <a id="menuLink1" class="pure-menu-link visitor clickable"></a>
+                <ul class="pure-menu-children">
+                    <li class="pure-menu-item">
+                        <a localizable class="pure-menu-link my-projects"
+                            href="my_projects">My Projects</a></li>
+                    <li class="pure-menu-item">
+                        <a localizable class="pure-menu-link my-collections"
+                            href="my_collections">My Collections</a></li>
+                    <li class="pure-menu-item">
+                        <a localizable class="pure-menu-link my-public-projects"
+                           href="">My Public Page</a></li>
+                    <li class="pure-menu-item">
+                        <a localizable class="pure-menu-link my-profile"
+                            href="profile">My Profile</a></li>
+                    <li hidden="true" class="pure-menu-item admin">
+                        <a localizable class="pure-menu-link"
+                            href="admin">Administration</a></li>
+                    <hr>
+                    <li class="pure-menu-item">
+                        <a localizable class="pure-menu-link clickable"
+                            onclick="SnapCloud.logout(function () {
+                                sessionStorage.clear();
+                                location.href = 'index';
+                            });">Log Out</a></li>
+                </ul>
+            </li>
+            <li class="pure-menu-item pure-u-1-24 pure-menu-has-children
+                pure-menu-allow-hover language-select">
+                <a class="pure-menu-link clickable">
+                    <i class="fas fa-globe"></i>
+                </a>
+                <ul class="pure-menu-children languages">
+                    <a class="pure-menu-link clickable"
+                        onclick="localizer.setLanguage('es');">Castellano</a>
+                    <a class="pure-menu-link clickable"
+                        onclick="localizer.setLanguage('ca');">Català</a>
+                    <a class="pure-menu-link clickable"
+                        onclick="localizer.setLanguage('zh');">简体中文</a>
+                    <a class="pure-menu-link clickable"
+                        onclick="localizer.setLanguage('de');">Deutsch</a>
+                    <a class="pure-menu-link clickable"
+                        onclick="localizer.setLanguage('en');">English</a>
+                    <a class="pure-menu-link clickable"
+                        onclick="localizer.setLanguage('pt');">Português</a>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+        <div id="wrapper">
+<script src="js/dialog.js"></script>
+<script src="js/project.js"></script>
+<script src="js/inplace.js"></script>
+<link rel="stylesheet" href="style/project.css">
+
+<div hidden class="project big">
+    <div class="title">
+        <h1></h1>
+        <span class="remixed-from"></span>
+    </div>
+    <div class="viewer pure-g">
+        <!-- Project viewer -->
+        <div class="embed pure-u-1-2">
+            <!-- Spinner shown while embed hasn't been loaded -->
+            <i class="project-loader fas fa-spinner fa-spin fa-3x"
+                aria-hidden="true"></i>
+
+            <!-- Project control bar -->
+            <div class="controlbar">
+                <i class="present-button fas fa-expand clickable"
+                    onclick="toggleFullScreen();"></i>
+                <i class="start-button fas fa-flag clickable"
+                    onclick="runProject(event);"></i>
+                <i class="pause-button fas fa-pause clickable"
+                    onclick="togglePauseProject();"></i>
+                <i class="stop-button fas fa-octagon clickable"
+                    onclick="stopProject();"></i>
+            </div>
+
+            <!-- Project embed placeholder -->
+            <i class="embed-placeholder"></i>
+
+            <!-- Project Action Buttons -->
+            <div class="buttons">
+                <a localizable class="pure-button open"
+                    target="_blank">See Code</a>
+                <a localizable class="pure-button download"
+                    target="_blank">Download</a>
+                <a localizable class="pure-button embed-button"
+                    target="_blank">Embed</a>
+                <a localizable class="pure-button collect"
+                    target="_blank">Add to Collection</a>
+                <a localizable class="pure-button pure-button-warning delete"
+                    target="_blank">Delete</a>
+                <span class="flag-container">
+                    <a localizable class="clickable warning flag"
+                        target="_blank">Report this project</a>
+                </span>
+            </div>
+        </div>
+        <!-- just a separator -->
+        <i class="pure-u-1-24"></i>
+        <div class="details pure-u-11-24">
+            <!-- Notes -->
+            <pre class="notes"> </pre>
+            <!-- Dates and project meta -->
+            <div class="dates">
+                <p class="created"><strong
+                    localizable>Created:</strong><span></span></p>
+                <p class="updated"><strong
+                    localizable>Last updated:</strong><span></span></p>
+                <p class="shared"><strong
+                    localizable>Shared:</strong><span></span></p>
+                <p class="published"><strong
+                    localizable>Published:</strong><span></span></p>
+                <a localizable class="pure-button share"
+                    target="_blank">Share</a>
+                <a localizable class="pure-button unshare"
+                    target="_blank">Unshare</a>
+                <a localizable class="pure-button publish"
+                    target="_blank">Publish</a>
+                <a localizable class="pure-button unpublish"
+                    target="_blank">Unpublish</a>
+            </div>
+        </div>
+    </div>
+
+<!-- Carousel of remixes -->
+<!--
+    Any template that uses me needs to specify the following functions:
+
+    // Defines how to retrieve a particular page from the DB
+    project_remixes_loadPage (
+        query,      // search query
+        pageSize,   // amount of elements per page
+        pageNumber, // current page being requested
+        onSuccess   // callback called when response comes back. Just leave as
+                    // `onSuccess` unless doing something very specific, as
+                    // this callback is defined by the search bar itself.
+    )
+
+    // Defines how to load a particular page
+    project_remixes_onLoadPage (
+        response,      // response from the server
+        targetElement  // HTML element where response should be rendered
+    )
+
+    Once these functions have been defined, just call:
+
+    project_remixes_initGrid(callback);
+-->
+<div class="project_remixes container">
+    <h2 class="project_remixes header" localizable></h2>
+    <div class="bar">
+        <div hidden class="project_remixes search">
+            <form action="project_remixes">
+                <input type="text" name="query">
+                <i class="fas fa-search"></i>
+            </form>
+            <script>
+                var project_remixes_page = 1,
+                    project_remixes_totalPages = 1,
+                    project_remixes_maxPages = [0][0] || 0, // 0 = no limit
+                    project_remixes_pageSize = [5][0] || 150,
+                    project_remixes_keepIfEmpty = [][0];
+
+                if (!['Remixes'][0]) {
+                    document.querySelector('.project_remixes.header').remove();
+                } else {
+                    document.querySelector('.project_remixes.header').innerHTML =
+                        ['Remixes'][0];
+                }
+
+                if ([false][0]) {
+                    document.querySelector(".project_remixes.search").hidden =
+                        false;
+                };
+
+                document.querySelector('.project_remixes form input').value =
+                    getUrlParameter('query');
+
+                function project_remixes_toPage (pageNumber) {
+                    var project_remixes_div =
+                            document.querySelector('.project_remixes.container'),
+                        project_remixes_listDiv =
+                            document.querySelector('.project_remixes.list'),
+                        project_remixes_pageSpan =
+                            document.querySelector(
+                                '.project_remixes.paginator .page'),
+                        project_remixes_totalPagesSpan =
+                            document.querySelector(
+                                '.project_remixes.paginator .total-pages'),
+                        height = project_remixes_listDiv.clientHeight;
+
+                    // Forces grid to keep previous height when emptied out
+                    if (height > 0) {
+                        project_remixes_listDiv.style.height = height;
+                    }
+
+                    project_remixes_listDiv.innerHTML = '';
+                    beganLoading('.project_remixes.list');
+
+                    project_remixes_loadPage(
+                        getUrlParameter('query'),
+                        project_remixes_pageSize,
+                        pageNumber,
+                        function (response) {
+                            project_remixes_totalPages =
+                                project_remixes_maxPages || response.pages;
+                            project_remixes_totalPagesSpan.textContent =
+                                project_remixes_totalPages;
+
+                            if (project_remixes_totalPages == 0 ||
+                                (response.projects && !response.projects[0]) ||
+                                (response.collections &&
+                                    !response.collections[0]) ||
+                                (response.users && !response.users[0])
+                                // Until we fix the API this will do
+                            ) {
+                                if (!project_remixes_keepIfEmpty) {
+                                    project_remixes_div.remove();
+                                } else {
+                                    doneLoading('.project_remixes.list');
+                                }
+                                return;
+                            } else if (project_remixes_totalPages == 1 &&
+                                    !project_remixes_keepIfEmpty) {
+                                document.querySelector(
+                                    '.project_remixes.paginator').remove();
+                            }
+
+                            project_remixes_onLoadPage(response,
+                                project_remixes_listDiv);
+
+                            doneLoading('.project_remixes.list');
+                        }
+                    );
+
+                    project_remixes_page = pageNumber;
+                    project_remixes_pageSpan.textContent = pageNumber;
+                };
+
+                function project_remixes_initGrid (callback) {
+                    project_remixes_toPage(1);
+                    if (callback) {
+                        callback.call(this);
+                    }
+                };
+
+            </script>
+        </div>
+<nav class="project_remixes paginator">
+    <a class="clickable" onclick="project_remixes_toPage(1);"><i class="fas fa-caret-left"></i></a>
+    <a class="clickable" onclick="project_remixes_toPage(project_remixes_page - 5 > 0 ? project_remixes_page - 5 : 1);"><i class="fas fa-angle-double-left"></i></a>
+    <a class="clickable" onclick="project_remixes_toPage(project_remixes_page - 1 > 0 ? project_remixes_page - 1 : project_remixes_page);"><i class="fas fa-angle-left"></i></a>
+    <span class="page"></span> / <span class="total-pages"></span>
+    <a class="clickable" onclick="project_remixes_toPage(project_remixes_page + 1 < project_remixes_totalPages ? project_remixes_page + 1 : project_remixes_totalPages);"><i class="fas fa-angle-right"></i></a>
+    <a class="clickable" onclick="project_remixes_toPage(project_remixes_page + 5 < project_remixes_totalPages ? project_remixes_page + 5 : project_remixes_totalPages);"><i class="fas fa-angle-double-right"></i></a>
+    <a class="clickable" onclick="project_remixes_toPage(project_remixes_totalPages);"><i class="fas fa-caret-right"></i></a>
+</nav>
+    </div>
+    <div class="project_remixes list pure-g"></div>
+</div>
+<script>
+    project_remixes_loadPage =
+        function (term, pageSize, pageNumber, onSuccess) {
+            SnapCloud.getRemixes(
+                pageUser(),
+                pageProject(),
+                pageNumber,
+                pageSize,
+                onSuccess,
+                genericError
+            );
+        };
+
+    project_remixes_onLoadPage =
+        function (response, targetElement) {
+            response.projects.forEach(function (project) {
+                targetElement.append(
+                    newProjectDiv(
+                        project,
+                        {
+                            size: 'small',
+                            gridSize: 5,
+                            extraFields: {
+                                isPublic: 'ispublic',
+                                isPublished: 'ispublished',
+                                author: 'username'
+                            }
+                        }
+                    )
+                );
+            });
+        };
+
+    project_remixes_initGrid();
+</script>
+<!-- Carousel of collections -->
+<!--
+    Any template that uses me needs to specify the following functions:
+
+    // Defines how to retrieve a particular page from the DB
+    project_collections_loadPage (
+        query,      // search query
+        pageSize,   // amount of elements per page
+        pageNumber, // current page being requested
+        onSuccess   // callback called when response comes back. Just leave as
+                    // `onSuccess` unless doing something very specific, as
+                    // this callback is defined by the search bar itself.
+    )
+
+    // Defines how to load a particular page
+    project_collections_onLoadPage (
+        response,      // response from the server
+        targetElement  // HTML element where response should be rendered
+    )
+
+    Once these functions have been defined, just call:
+
+    project_collections_initGrid(callback);
+-->
+<div class="project_collections container">
+    <h2 class="project_collections header" localizable></h2>
+    <div class="bar">
+        <div hidden class="project_collections search">
+            <form action="project_collections">
+                <input type="text" name="query">
+                <i class="fas fa-search"></i>
+            </form>
+            <script>
+                var project_collections_page = 1,
+                    project_collections_totalPages = 1,
+                    project_collections_maxPages = [0][0] || 0, // 0 = no limit
+                    project_collections_pageSize = [5][0] || 150,
+                    project_collections_keepIfEmpty = [][0];
+
+                if (!['Collections containing this project'][0]) {
+                    document.querySelector('.project_collections.header').remove();
+                } else {
+                    document.querySelector('.project_collections.header').innerHTML =
+                        ['Collections containing this project'][0];
+                }
+
+                if ([false][0]) {
+                    document.querySelector(".project_collections.search").hidden =
+                        false;
+                };
+
+                document.querySelector('.project_collections form input').value =
+                    getUrlParameter('query');
+
+                function project_collections_toPage (pageNumber) {
+                    var project_collections_div =
+                            document.querySelector('.project_collections.container'),
+                        project_collections_listDiv =
+                            document.querySelector('.project_collections.list'),
+                        project_collections_pageSpan =
+                            document.querySelector(
+                                '.project_collections.paginator .page'),
+                        project_collections_totalPagesSpan =
+                            document.querySelector(
+                                '.project_collections.paginator .total-pages'),
+                        height = project_collections_listDiv.clientHeight;
+
+                    // Forces grid to keep previous height when emptied out
+                    if (height > 0) {
+                        project_collections_listDiv.style.height = height;
+                    }
+
+                    project_collections_listDiv.innerHTML = '';
+                    beganLoading('.project_collections.list');
+
+                    project_collections_loadPage(
+                        getUrlParameter('query'),
+                        project_collections_pageSize,
+                        pageNumber,
+                        function (response) {
+                            project_collections_totalPages =
+                                project_collections_maxPages || response.pages;
+                            project_collections_totalPagesSpan.textContent =
+                                project_collections_totalPages;
+
+                            if (project_collections_totalPages == 0 ||
+                                (response.projects && !response.projects[0]) ||
+                                (response.collections &&
+                                    !response.collections[0]) ||
+                                (response.users && !response.users[0])
+                                // Until we fix the API this will do
+                            ) {
+                                if (!project_collections_keepIfEmpty) {
+                                    project_collections_div.remove();
+                                } else {
+                                    doneLoading('.project_collections.list');
+                                }
+                                return;
+                            } else if (project_collections_totalPages == 1 &&
+                                    !project_collections_keepIfEmpty) {
+                                document.querySelector(
+                                    '.project_collections.paginator').remove();
+                            }
+
+                            project_collections_onLoadPage(response,
+                                project_collections_listDiv);
+
+                            doneLoading('.project_collections.list');
+                        }
+                    );
+
+                    project_collections_page = pageNumber;
+                    project_collections_pageSpan.textContent = pageNumber;
+                };
+
+                function project_collections_initGrid (callback) {
+                    project_collections_toPage(1);
+                    if (callback) {
+                        callback.call(this);
+                    }
+                };
+
+            </script>
+        </div>
+<nav class="project_collections paginator">
+    <a class="clickable" onclick="project_collections_toPage(1);"><i class="fas fa-caret-left"></i></a>
+    <a class="clickable" onclick="project_collections_toPage(project_collections_page - 5 > 0 ? project_collections_page - 5 : 1);"><i class="fas fa-angle-double-left"></i></a>
+    <a class="clickable" onclick="project_collections_toPage(project_collections_page - 1 > 0 ? project_collections_page - 1 : project_collections_page);"><i class="fas fa-angle-left"></i></a>
+    <span class="page"></span> / <span class="total-pages"></span>
+    <a class="clickable" onclick="project_collections_toPage(project_collections_page + 1 < project_collections_totalPages ? project_collections_page + 1 : project_collections_totalPages);"><i class="fas fa-angle-right"></i></a>
+    <a class="clickable" onclick="project_collections_toPage(project_collections_page + 5 < project_collections_totalPages ? project_collections_page + 5 : project_collections_totalPages);"><i class="fas fa-angle-double-right"></i></a>
+    <a class="clickable" onclick="project_collections_toPage(project_collections_totalPages);"><i class="fas fa-caret-right"></i></a>
+</nav>
+    </div>
+    <div class="project_collections list pure-g"></div>
+</div>
+<script>
+    project_collections_loadPage =
+        function (term, pageSize, pageNumber, onSuccess) {
+            SnapCloud.getCollectionsContainingProject(
+                pageUser(), // username is implicit
+                pageProject(),
+                pageNumber,
+                pageSize,
+                onSuccess,
+                genericError,
+                'Could not fetch collection list'
+            );
+        };
+
+    project_collections_onLoadPage =
+        function (response, targetElement) {
+            if (!response.collections[0]) { return; }
+            response.collections.forEach(function (collection) {
+                targetElement.append(
+                    newCollectionDiv(
+                        collection,
+                        {
+                            size: 'small',
+                            gridSize: 5,
+                            extraFields: {
+                                isPublic: 'shared',
+                                isPublished: 'published',
+                                author: 'username'
+                            }
+                        }
+                    )
+                );
+            });
+        };
+
+    project_collections_initGrid();
+</script>
+
+</div>
+
+<script>
+    beganLoading('#wrapper');
+
+    // Prevent scrolling when focus is in the iframe
+    document.onscroll = function (event) {
+        if (document.activeElement.tagName === 'IFRAME') {
+            window.scrollTo(0, 0);
+        }
+    };
+
+    SnapCloud.getProjectMetadata(
+        pageProject(),
+        pageUser(),
+        function (project) {
+            var datesDiv = document.querySelector('.dates'),
+                buttonsDiv = document.querySelector('.buttons');
+            setTitle(pageProject() + localizer.localize(' by ') +
+                pageUser() + ' - Snap! Build Your Own Blocks');
+
+            // Fill up all fields
+            fillProjectTitle(project, document.querySelector('.title'));
+            loadProjectViewer(
+                project,
+                document.querySelector('.embed-placeholder')
+            );
+            fillProjectNotes(project, document.querySelector('.notes'));
+            fillProjectDates(project, datesDiv);
+            fillRemixInfo(project, document.querySelector('.remixed-from'));
+
+            // Set up button visibility according to user permissions
+            // and project visibility state
+            setProjectControlButtonsVisibility(project, buttonsDiv);
+            setProjectShareButtonsVisibility(project, datesDiv);
+
+            if (owns(project)) {
+                buttonsDiv.querySelector('.open').innerHTML =
+                    localizer.localize('Edit');
+            }
+
+            // Set up button functionality
+            buttonsDiv.querySelector('.open').href =
+                projectURL(project.username, project.projectname) +
+                    '&editMode&noRun';
+            buttonsDiv.querySelector('.download').onclick =
+                function () { downloadProject(project); };
+            buttonsDiv.querySelector('.embed-button').onclick =
+                function () { embedDialog(project); }
+            buttonsDiv.querySelector('.collect').onclick =
+                function () { collectProject(project); }
+            buttonsDiv.querySelector('.flag').onclick =
+                function () { confirmFlagProject(project); }
+            buttonsDiv.querySelector('.delete').onclick =
+                function () { confirmDeleteProject(project); }
+
+            datesDiv.querySelector('.share').onclick =
+                function () {
+                    confirmShareProject(project, buttonsDiv, datesDiv)
+                };
+            datesDiv.querySelector('.unshare').onclick =
+                function () {
+                    confirmUnshareProject(project, buttonsDiv, datesDiv);
+                };
+            datesDiv.querySelector('.publish').onclick =
+                function () {
+                    confirmPublishProject(project, buttonsDiv, datesDiv);
+                };
+            datesDiv.querySelector('.unpublish').onclick =
+                function () {
+                    confirmUnpublishProject(project, buttonsDiv, datesDiv);
+                };
+
+            doneLoading('#wrapper');
+            document.querySelector('.project').hidden = false;
+        },
+        genericError
+    );
+</script>
+        </div>
+<div id="footer">
+    <div class="links pure-g">
+        <div class="pure-u-1-5">
+            <p><h4 localizable>About</h4></p>
+            <p><a localizable href="about">About Snap<em>!</em></a></p>
+            <p><a localizable href="blog">Blog</a></p>
+            <p><a localizable href="credits">Credits</a></p>
+            <p><a localizable href="requirements">Technical Requirements</a></p>
+            <p><a localizable href="partners">Partners</a></p>
+            <p><a localizable href="source" >Source Code</a></p>
+        </div>
+        <div class="pure-u-1-5">
+            <p><h4 localizable>Learning</h4></p>
+            <p><a localizable href="examples">Examples</a></p>
+            <p><a localizable href="snapsource/help/SnapManual.pdf"
+                >Reference Manual</a></p>
+            <p><a localizable href="materials">Materials</a></p>
+            <p><a localizable href="bjc">The Beauty and Joy of Computing</a></p>
+            <p><a localizable href="research">Research</a></p>
+        </div>
+        <div class="pure-u-1-5">
+            <p><h4 localizable>Tools</h4></p>
+            <p><a localizable href="offline">Offline Version</a></p>
+            <p><a localizable href="extensions">Extensions</a></p>
+            <p><a href="snapp">Snapp<em>!</em></a></p>
+            <p><a href="snapin8r2">Snapin8r2</a></p>
+        </div>
+        <div class="pure-u-1-5">
+            <p><h4 localizable>Support</h4></p>
+            <p><a localizable target="_blank"
+                href="https://forum.snap.berkeley.edu/">Forum</a></p>
+            <p><a localizable href="contact">Contact Us</a></p>
+            <p><a localizable href="mirrors">Mirrors</a></p>
+        </div>
+        <div class="pure-u-1-5">
+            <p><h4 localizable>Legal</h4></p>
+            <p><a localizable href="dmca">DMCA</a></p>
+            <p><a localizable href="privacy">Privacy</a></p>
+            <p><a localizable href="tos">Terms of Service</a></p>
+        </div>
+    </div>
+</div>
+    </body>
+    <script>
+    SnapCloud.genericError = genericError;
+    document.querySelector('#top-bar .run').href = snapURL;
+    if (!sessionStorage.username) {
+        SnapCloud.initSession(
+            function (username, role) {
+                sessionStorage.username = username;
+                sessionStorage.role = role;
+                initForUsername(username);
+            }
+        );
+    } else {
+        initForUsername(sessionStorage.username);
+    }
+
+    function initForUsername (username) {
+        if (username) {
+            SnapCloud.username = username;
+            document.querySelector('li.join').hidden = true;
+            document.querySelector('li.sign-in').hidden = true;
+            document.querySelector('li.user-menu').hidden = false;
+            document.querySelector('a.my-public-projects').href =
+                'user?user=' + username;
+            if (hasAnyOfRoles(['admin', 'moderator', 'reviewer'])) {
+                document.querySelector('.admin').hidden = false;
+            }
+            fillVisitorFields();
+        } else {
+            document.querySelector('li.join').hidden = false;
+            document.querySelector('li.sign-in').hidden = false;
+            document.querySelector('li.user-menu').hidden = true;
+        }
+        fillUsernameFields();
+        fillVisitorFields();
+        doneLoading();
+    }
+
+    // Share sessionStorage across tabs
+    // http://blog.guya.net/2015/06/12/sharing-sessionstorage-between-tabs-for-secure-multi-tab-authentication/
+    if (!sessionStorage.length) {
+        localStorage.setItem('getSessionStorage', Date.now());
+    };
+    window.addEventListener('storage', function(event) {
+        if (event.key == 'getSessionStorage') {
+            localStorage.setItem('sessionStorage',
+                JSON.stringify(sessionStorage));
+            localStorage.removeItem('sessionStorage');
+        } else if (event.key == 'sessionStorage' && !sessionStorage.length) {
+            var data = JSON.parse(event.newValue), value;
+            for (key in data) { sessionStorage.setItem(key, data[key]); }
+        }
+    });
+    </script>
+</html>
